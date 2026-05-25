@@ -15,6 +15,13 @@
 - (NSArray *)getCheckpoints       { return [LiftoffCollector checkpoints]; }
 - (void)clear                     { [LiftoffCollector clear]; }
 
+- (NSDictionary *)getAnchor {
+    return @{
+        @"monotonicMs": @([LiftoffCollector anchorMonotonicMs]),
+        @"wallMs":      @([LiftoffCollector anchorWallMs]),
+    };
+}
+
 #if DEBUG
 - (void)setBridge:(RCTBridge *)bridge {
     [super setBridge:bridge];

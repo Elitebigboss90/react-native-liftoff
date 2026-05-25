@@ -3,6 +3,8 @@
 
 static NSMutableArray *_checkpoints;
 static dispatch_queue_t _queue;
+static double _anchorMonotonicMs;
+static double _anchorWallMs;
 
 static double nowMs(void) {
     static mach_timebase_info_data_t tb;
@@ -17,6 +19,8 @@ static double nowMs(void) {
     if (self == [LiftoffCollector class]) {
         _checkpoints = [NSMutableArray new];
         _queue = dispatch_queue_create("com.liftoff.collector", DISPATCH_QUEUE_SERIAL);
+        _anchorMonotonicMs = nowMs();
+        _anchorWallMs = [[NSDate date] timeIntervalSince1970] * 1000.0;
     }
 }
 
@@ -36,5 +40,8 @@ static double nowMs(void) {
 + (void)clear {
     dispatch_async(_queue, ^{ [_checkpoints removeAllObjects]; });
 }
+
++ (double)anchorMonotonicMs { return _anchorMonotonicMs; }
++ (double)anchorWallMs      { return _anchorWallMs; }
 
 @end

@@ -6,6 +6,10 @@ jest.mock('../NativeLiftoff', () => ({
     mark: jest.fn(),
     getCheckpoints: jest.fn(() => []),
     clear: jest.fn(),
+    getAnchor: jest.fn(() => ({
+      monotonicMs: 1000,
+      wallMs: 1_700_000_000_000,
+    })),
   },
 }));
 
@@ -16,10 +20,15 @@ import { createPageScope } from '../page';
 const mockMark = jest.mocked(NativeLiftoff.mark);
 const mockGetCheckpoints = jest.mocked(NativeLiftoff.getCheckpoints);
 const mockClear = jest.mocked(NativeLiftoff.clear);
+const mockGetAnchor = jest.mocked(NativeLiftoff.getAnchor);
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockGetCheckpoints.mockReturnValue([]);
+  mockGetAnchor.mockReturnValue({
+    monotonicMs: 1000,
+    wallMs: 1_700_000_000_000,
+  });
   clear();
 });
 
@@ -82,8 +91,61 @@ describe('getReport', () => {
     mockGetCheckpoints.mockReturnValue(checkpoints);
     const m = measure('xy', 'x', 'y');
     const report = getReport();
-    expect(report.checkpoints).toEqual(checkpoints);
+    expect(report.checkpoints).toEqual([
+      expect.objectContaining({ name: 'x', timestamp: 0 }),
+      expect.objectContaining({ name: 'y', timestamp: 20 }),
+    ]);
     expect(report.measurements).toEqual([m]);
+  });
+
+  it('decorates checkpoints with wallTime and wallTimeIso', () => {
+    mockGetCheckpoints.mockReturnValue([{ name: 'boot', timestamp: 1200 }]);
+    const { checkpoints } = getReport();
+    // wallTime = 1_700_000_000_000 + (1200 - 1000) = 1_700_000_000_200
+    expect(checkpoints[0]!.wallTime).toBe(1_700_000_000_200);
+    expect(checkpoints[0]!.wallTimeIso).toBe(
+      new Date(1_700_000_000_200).toISOString()
+    );
+  });
+
+  it('wall-time math: wallTime = anchor.wallMs + (timestamp - anchor.monotonicMs)', () => {
+    // Use the default anchor values (monotonicMs: 1000, wallMs: 1_700_000_000_000)
+    // set in beforeEach — the cached anchor cannot be overridden mid-test.
+    mockGetCheckpoints.mockReturnValue([{ name: 'a', timestamp: 1500 }]);
+    const { checkpoints } = getReport();
+    // wallTime = 1_700_000_000_000 + (1500 - 1000) = 1_700_000_000_500
+    expect(checkpoints[0]!.wallTime).toBe(1_700_000_000_500);
+  });
+
+  it('calls getAnchor only once across multiple getReport() calls', () => {
+    jest.isolateModules(() => {
+      const freshNative = (
+        require('../NativeLiftoff') as { default: typeof NativeLiftoff }
+      ).default;
+      const freshCore = require('../core') as typeof import('../core');
+      jest
+        .mocked(freshNative.getCheckpoints)
+        .mockReturnValue([{ name: 'a', timestamp: 100 }]);
+      freshCore.getReport();
+      freshCore.getReport();
+      expect(freshNative.getAnchor).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('clear() does not cause getAnchor to be re-fetched', () => {
+    jest.isolateModules(() => {
+      const freshNative = (
+        require('../NativeLiftoff') as { default: typeof NativeLiftoff }
+      ).default;
+      const freshCore = require('../core') as typeof import('../core');
+      jest
+        .mocked(freshNative.getCheckpoints)
+        .mockReturnValue([{ name: 'a', timestamp: 100 }]);
+      freshCore.getReport();
+      freshCore.clear();
+      freshCore.getReport();
+      expect(freshNative.getAnchor).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
@@ -138,8 +200,8 @@ describe('createPageScope', () => {
 
     const report = scope.getReport();
     expect(report.checkpoints).toEqual([
-      { name: 'page:Home:start', timestamp: 0 },
-      { name: 'page:Home:end', timestamp: 40 },
+      expect.objectContaining({ name: 'page:Home:start', timestamp: 0 }),
+      expect.objectContaining({ name: 'page:Home:end', timestamp: 40 }),
     ]);
     expect(report.measurements).toHaveLength(1);
     expect(report.measurements[0]!.name).toBe('page:Home:load');

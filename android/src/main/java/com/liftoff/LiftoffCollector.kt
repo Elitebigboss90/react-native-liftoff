@@ -3,6 +3,9 @@ package com.liftoff
 import android.os.SystemClock
 
 object LiftoffCollector {
+  val anchorMonotonicMs: Double = SystemClock.elapsedRealtime().toDouble()
+  val anchorWallMs: Double = System.currentTimeMillis().toDouble()
+
   private val list = mutableListOf<Map<String, Any>>()
 
   @Synchronized fun mark(name: String) {

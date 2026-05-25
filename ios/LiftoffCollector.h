@@ -4,4 +4,6 @@
 + (void)mark:(NSString *)name;
 + (NSArray *)checkpoints;
 + (void)clear;
++ (double)anchorMonotonicMs;
++ (double)anchorWallMs;
 @end

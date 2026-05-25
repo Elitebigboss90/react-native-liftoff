@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
 class LiftoffModule(reactContext: ReactApplicationContext) : NativeLiftoffSpec(reactContext) {
@@ -23,6 +24,13 @@ class LiftoffModule(reactContext: ReactApplicationContext) : NativeLiftoffSpec(r
   }
 
   override fun clear() = LiftoffCollector.clear()
+
+  override fun getAnchor(): WritableMap {
+    val map = Arguments.createMap()
+    map.putDouble("monotonicMs", LiftoffCollector.anchorMonotonicMs)
+    map.putDouble("wallMs", LiftoffCollector.anchorWallMs)
+    return map
+  }
 
   // No-ops: listener bookkeeping is handled by React Native's event system.
   override fun addListener(eventType: String) {}

@@ -12,6 +12,12 @@ import { clear, getReport } from './core';
 import NativeLiftoff from './NativeLiftoff';
 import type { Report } from './types';
 
+function formatLocalTime(wallMs: number): string {
+  const d = new Date(wallMs);
+  const pad = (n: number, w = 2) => n.toString().padStart(w, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`;
+}
+
 // Optional peer dep — feature-detected at runtime, never crashes if absent.
 let Clipboard: { setString(text: string): void } | null = null;
 try {
@@ -67,13 +73,19 @@ function DevMenuReportImpl(): React.ReactElement {
           </View>
           <ScrollView style={styles.body}>
             <Text style={styles.section}>Checkpoints</Text>
-            {report.checkpoints.map((c, i) => (
-              <Text key={i} style={styles.row}>
-                {c.name}
-                {'  '}
-                {c.timestamp.toFixed(2)} ms
-              </Text>
-            ))}
+            {report.checkpoints.map((c, i) => {
+              const firstTs = report.checkpoints[0]?.timestamp ?? c.timestamp;
+              const delta = (c.timestamp - firstTs).toFixed(0);
+              return (
+                <Text key={i} style={styles.row}>
+                  {formatLocalTime(c.wallTime)}
+                  {'  +'}
+                  {delta}
+                  {'ms  '}
+                  {c.name}
+                </Text>
+              );
+            })}
             <Text style={styles.section}>Measurements</Text>
             {report.measurements.map((m, i) => (
               <Text key={i} style={styles.row}>

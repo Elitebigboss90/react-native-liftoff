@@ -27,6 +27,14 @@ home.markTTI();
 console.log(home.getReport());
 ```
 
+### Checkpoint timestamps
+
+Each checkpoint in a `Report` carries three timestamp fields:
+
+- **`timestamp`** — monotonic milliseconds (`mach_absolute_time` on iOS, `SystemClock.elapsedRealtime()` on Android). Use this for computing durations — it is immune to NTP sync and clock changes.
+- **`wallTime`** — Unix epoch milliseconds, derived from the monotonic value using a one-time anchor recorded at collector init. Use for display only; do not subtract two `wallTime` values across devices or sessions.
+- **`wallTimeIso`** — `wallTime` formatted as ISO 8601 (e.g. `"2024-11-14T21:30:01.221Z"`).
+
 ## Dev Menu
 
 In **debug builds only**, liftoff registers a "Show Liftoff Report" item in the React Native developer menu.
