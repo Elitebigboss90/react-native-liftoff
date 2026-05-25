@@ -1,7 +1,12 @@
 import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
 export interface Spec extends TurboModule {
-  multiply(a: number, b: number): number;
+  mark(name: string): void;
+  getCheckpoints(): Array<{ name: string; timestamp: number }>;
+  clear(): void;
+  // Required by NativeEventEmitter on the JS side:
+  readonly addListener: (eventType: string) => void;
+  readonly removeListeners: (count: number) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('Liftoff');

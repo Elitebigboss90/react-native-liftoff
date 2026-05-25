@@ -1,12 +1,13 @@
 import { Text, View, StyleSheet } from 'react-native';
-import { multiply } from 'react-native-liftoff';
+import { mark, getReport } from 'react-native-liftoff';
 
-const result = multiply(3, 7);
+mark('app:start');
+const report = getReport();
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Checkpoints: {report.checkpoints.length}</Text>
     </View>
   );
 }
