@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { mark, DevMenuReport } from 'react-native-liftoff';
+import { mark, measure, DevMenuReport } from 'react-native-liftoff';
 
 import HomeScreen from './screens/HomeScreen';
 import HeavyListScreen from './screens/HeavyListScreen';
@@ -27,6 +27,17 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   useEffect(() => {
     mark('js:appComponent:mounted');
+    measure(
+      'boot:native-init',
+      'app:didFinishLaunching:start',
+      'app:didFinishLaunching:end'
+    );
+    measure('boot:js-load', 'rn:factory:willStart', 'js:appComponent:render');
+    measure(
+      'boot:react-tree',
+      'js:appComponent:render',
+      'js:appComponent:mounted'
+    );
   }, []);
 
   return (

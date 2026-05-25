@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { createPageScope, getReport } from 'react-native-liftoff';
+import { createPageScope, measure, getReport } from 'react-native-liftoff';
 import type { RootStackParamList } from '../App';
 
 const scope = createPageScope('Home');
@@ -24,6 +24,8 @@ export default function HomeScreen() {
   useEffect(() => {
     scope.mark('mounted');
     scope.markTTI();
+    measure('boot:total', 'app:didFinishLaunching:start', 'page:Home:tti');
+    measure('boot:js-to-tti', 'js:appComponent:mounted', 'page:Home:tti');
   }, []);
 
   const report = getReport();
