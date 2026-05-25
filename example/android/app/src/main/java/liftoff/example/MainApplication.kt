@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import com.liftoff.LiftoffCollector
 
 class MainApplication : Application(), ReactApplication {
 
@@ -21,7 +22,13 @@ class MainApplication : Application(), ReactApplication {
   }
 
   override fun onCreate() {
+    // Canonical boot checkpoints — recorded around React Native host initialization.
+    // Timestamps use SystemClock.elapsedRealtime() via LiftoffCollector.
+    LiftoffCollector.mark("app:onCreate:start")
     super.onCreate()
+    LiftoffCollector.mark("rn:host:willInit")
     loadReactNative(this)
+    LiftoffCollector.mark("rn:host:didInit")
+    LiftoffCollector.mark("app:onCreate:end")
   }
 }

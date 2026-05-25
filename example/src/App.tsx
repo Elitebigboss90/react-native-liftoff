@@ -1,21 +1,68 @@
-import { Text, View, StyleSheet } from 'react-native';
-import { mark, getReport } from 'react-native-liftoff';
+import 'react-native-gesture-handler';
+import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { mark, DevMenuReport } from 'react-native-liftoff';
 
-mark('app:start');
-const report = getReport();
+import HomeScreen from './screens/HomeScreen';
+import HeavyListScreen from './screens/HeavyListScreen';
+import AnimatedScreen from './screens/AnimatedScreen';
+import StorageScreen from './screens/StorageScreen';
+import FormScreen from './screens/FormScreen';
+
+mark('js:appComponent:render');
+
+export type RootStackParamList = {
+  Home: undefined;
+  HeavyList: undefined;
+  Animated: undefined;
+  Storage: undefined;
+  Form: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+  useEffect(() => {
+    mark('js:appComponent:mounted');
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Checkpoints: {report.checkpoints.length}</Text>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ title: 'Liftoff Demo' }}
+            />
+            <Stack.Screen
+              name="HeavyList"
+              component={HeavyListScreen}
+              options={{ title: 'Heavy List' }}
+            />
+            <Stack.Screen
+              name="Animated"
+              component={AnimatedScreen}
+              options={{ title: 'Animated' }}
+            />
+            <Stack.Screen
+              name="Storage"
+              component={StorageScreen}
+              options={{ title: 'Storage' }}
+            />
+            <Stack.Screen
+              name="Form"
+              component={FormScreen}
+              options={{ title: 'Form' }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+        <DevMenuReport />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

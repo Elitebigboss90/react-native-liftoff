@@ -14,6 +14,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    // Canonical boot checkpoints — recorded before RN host initialization.
+    // Timestamps use mach_absolute_time() via LiftoffCollector (same clock as JS marks).
+    LiftoffCollector.mark("app:didFinishLaunching:start")
+
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -23,11 +27,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     window = UIWindow(frame: UIScreen.main.bounds)
 
+    LiftoffCollector.mark("rn:factory:willStart")
     factory.startReactNative(
       withModuleName: "LiftoffExample",
       in: window,
       launchOptions: launchOptions
     )
+    LiftoffCollector.mark("app:didFinishLaunching:end")
 
     return true
   }
