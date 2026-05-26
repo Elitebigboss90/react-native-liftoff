@@ -2,7 +2,7 @@ import type { TurboModule, CodegenTypes } from 'react-native';
 import { TurboModuleRegistry, NativeModules } from 'react-native';
 
 export interface Spec extends TurboModule {
-  mark(name: string): void;
+  mark(name: string): number;
   getCheckpoints(): Array<{ name: string; timestamp: number }>;
   clear(): void;
   getAnchor(): { monotonicMs: number; wallMs: number };

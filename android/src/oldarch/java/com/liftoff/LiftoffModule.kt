@@ -26,7 +26,8 @@ class LiftoffModule(reactContext: ReactApplicationContext) :
     return arr
   }
 
-  @ReactMethod fun mark(name: String) = LiftoffCollector.mark(name)
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  fun mark(name: String): Double = LiftoffCollector.mark(name)
   @ReactMethod fun clear() = LiftoffCollector.clear()
 
   @ReactMethod(isBlockingSynchronousMethod = true)

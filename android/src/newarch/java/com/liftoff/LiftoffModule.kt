@@ -7,7 +7,7 @@ import com.facebook.react.bridge.WritableMap
 
 class LiftoffModule(reactContext: ReactApplicationContext) : NativeLiftoffSpec(reactContext) {
 
-  override fun mark(name: String) = LiftoffCollector.mark(name)
+  override fun mark(name: String): Double = LiftoffCollector.mark(name)
 
   override fun getCheckpoints(): WritableArray {
     val arr = Arguments.createArray()

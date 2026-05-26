@@ -44,13 +44,19 @@ function DevMenuReportImpl(): React.ReactElement {
 
     DevSettings.addMenuItem('Show Liftoff Report', show);
 
-    // New arch: codegen EventEmitter — NativeLiftoff.onShowReport(cb) returns EventSubscription.
-    // Old arch: NativeLiftoff.onShowReport is absent; fall back to DeviceEventEmitter.
-    const sub =
+    // Always listen on DeviceEventEmitter so in-app buttons can trigger the report.
+    const deSub = DeviceEventEmitter.addListener('onShowReport', show);
+
+    // On new arch, also subscribe via codegen EventEmitter so native code can trigger it.
+    const nativeSub =
       typeof NativeLiftoff?.onShowReport === 'function'
         ? NativeLiftoff.onShowReport(show)
-        : DeviceEventEmitter.addListener('onShowReport', show);
-    return () => sub.remove();
+        : null;
+
+    return () => {
+      deSub.remove();
+      nativeSub?.remove();
+    };
   }, []);
 
   const handleClear = () => {

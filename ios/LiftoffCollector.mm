@@ -24,11 +24,12 @@ static double nowMs(void) {
     }
 }
 
-+ (void)mark:(NSString *)name {
++ (double)mark:(NSString *)name {
     double ts = nowMs();
     dispatch_sync(_queue, ^{
         [_checkpoints addObject:@{ @"name": name, @"timestamp": @(ts) }];
     });
+    return ts;
 }
 
 + (NSArray *)checkpoints {

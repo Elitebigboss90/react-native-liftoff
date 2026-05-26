@@ -21,8 +21,8 @@ function decorateCheckpoint(raw: RawCheckpoint): Checkpoint {
   return { ...raw, wallTime, wallTimeIso: new Date(wallTime).toISOString() };
 }
 
-export function mark(name: string): void {
-  NativeLiftoff.mark(name);
+export function mark(name: string): number {
+  return NativeLiftoff.mark(name);
 }
 
 export function measure(

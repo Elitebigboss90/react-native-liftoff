@@ -2,8 +2,8 @@ import { mark, measure, getReport } from './core';
 import type { Measurement, Report } from './types';
 
 export interface PageScope {
-  mark(name: string): void;
-  markTTI(): void;
+  mark(name: string): number;
+  markTTI(): number;
   measure(name: string, from: string, to: string): Measurement;
   getReport(): Report;
 }

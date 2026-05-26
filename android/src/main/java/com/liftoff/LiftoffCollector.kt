@@ -8,8 +8,10 @@ object LiftoffCollector {
 
   private val list = mutableListOf<Map<String, Any>>()
 
-  @Synchronized fun mark(name: String) {
-    list.add(mapOf("name" to name, "timestamp" to SystemClock.elapsedRealtime().toDouble()))
+  @Synchronized fun mark(name: String): Double {
+    val ts = SystemClock.elapsedRealtime().toDouble()
+    list.add(mapOf("name" to name, "timestamp" to ts))
+    return ts
   }
 
   @Synchronized fun checkpoints(): List<Map<String, Any>> = list.toList()

@@ -5,7 +5,7 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
-- (void)mark:(NSString *)name   { [LiftoffCollector mark:name]; }
+- (NSNumber *)mark:(NSString *)name { return @([LiftoffCollector mark:name]); }
 - (NSArray *)getCheckpoints     { return [LiftoffCollector checkpoints]; }
 - (void)clear                   { [LiftoffCollector clear]; }
 
@@ -28,7 +28,7 @@
 
 RCT_EXPORT_MODULE(Liftoff)
 
-RCT_EXPORT_METHOD(mark:(NSString *)name)               { [LiftoffCollector mark:name]; }
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(mark:(NSString *)name) { return @([LiftoffCollector mark:name]); }
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getCheckpoints) { return [LiftoffCollector checkpoints]; }
 RCT_EXPORT_METHOD(clear)                               { [LiftoffCollector clear]; }
 
