@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import {
   DeviceEventEmitter,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -24,7 +25,11 @@ export default function HomeScreen() {
   useEffect(() => {
     scope.mark('mounted');
     scope.markTTI();
-    measure('boot:total', 'app:didFinishLaunching:start', 'page:Home:tti');
+    const nativeStart =
+      Platform.OS === 'ios'
+        ? 'app:didFinishLaunching:start'
+        : 'app:onCreate:start';
+    measure('boot:total', nativeStart, 'page:Home:tti');
     measure('boot:js-to-tti', 'js:appComponent:mounted', 'page:Home:tti');
   }, []);
 

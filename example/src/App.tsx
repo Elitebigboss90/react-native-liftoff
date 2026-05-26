@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -27,12 +28,17 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   useEffect(() => {
     mark('js:appComponent:mounted');
-    measure(
-      'boot:native-init',
-      'app:didFinishLaunching:start',
-      'app:didFinishLaunching:end'
-    );
-    measure('boot:js-load', 'rn:factory:willStart', 'js:appComponent:render');
+    if (Platform.OS === 'ios') {
+      measure(
+        'boot:native-init',
+        'app:didFinishLaunching:start',
+        'app:didFinishLaunching:end'
+      );
+      measure('boot:js-load', 'rn:factory:willStart', 'js:appComponent:render');
+    } else {
+      measure('boot:native-init', 'app:onCreate:start', 'app:onCreate:end');
+      measure('boot:js-load', 'rn:host:willInit', 'js:appComponent:render');
+    }
     measure(
       'boot:react-tree',
       'js:appComponent:render',
