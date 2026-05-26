@@ -26,7 +26,7 @@ static double nowMs(void) {
 
 + (void)mark:(NSString *)name {
     double ts = nowMs();
-    dispatch_async(_queue, ^{
+    dispatch_sync(_queue, ^{
         [_checkpoints addObject:@{ @"name": name, @"timestamp": @(ts) }];
     });
 }

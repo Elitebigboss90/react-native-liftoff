@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A library to measure boot up time in the different stage for a react native app.",
   "main": "./lib/module/index.js",
+  "source": "./src/index.tsx",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
     ".": {

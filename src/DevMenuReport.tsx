@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
+  DeviceEventEmitter,
+  DevSettings,
   Modal,
-  NativeEventEmitter,
   ScrollView,
   StyleSheet,
   Text,
@@ -36,13 +37,19 @@ function DevMenuReportImpl(): React.ReactElement {
   });
 
   useEffect(() => {
-    // NativeLiftoff satisfies NativeModule structurally — addListener and
-    // removeListeners are declared in the spec.
-    const emitter = new NativeEventEmitter(NativeLiftoff as any);
-    const sub = emitter.addListener('LiftoffShowReport', () => {
+    const show = () => {
       setReport(getReport());
       setVisible(true);
-    });
+    };
+
+    DevSettings.addMenuItem('Show Liftoff Report', show);
+
+    // New arch: codegen EventEmitter — NativeLiftoff.onShowReport(cb) returns EventSubscription.
+    // Old arch: NativeLiftoff.onShowReport is absent; fall back to DeviceEventEmitter.
+    const sub =
+      typeof NativeLiftoff?.onShowReport === 'function'
+        ? NativeLiftoff.onShowReport(show)
+        : DeviceEventEmitter.addListener('onShowReport', show);
     return () => sub.remove();
   }, []);
 

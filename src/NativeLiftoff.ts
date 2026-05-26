@@ -1,13 +1,14 @@
-import { TurboModuleRegistry, type TurboModule } from 'react-native';
+import type { TurboModule, CodegenTypes } from 'react-native';
+import { TurboModuleRegistry, NativeModules } from 'react-native';
 
 export interface Spec extends TurboModule {
   mark(name: string): void;
   getCheckpoints(): Array<{ name: string; timestamp: number }>;
   clear(): void;
   getAnchor(): { monotonicMs: number; wallMs: number };
-  // Required by NativeEventEmitter on the JS side:
-  readonly addListener: (eventType: string) => void;
-  readonly removeListeners: (count: number) => void;
+  readonly onShowReport: CodegenTypes.EventEmitter<void>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('Liftoff');
+// New arch resolves via TurboModuleRegistry; old arch falls back to NativeModules bridge.
+export default (TurboModuleRegistry.get<Spec>('Liftoff') ??
+  NativeModules['Liftoff']) as Spec;

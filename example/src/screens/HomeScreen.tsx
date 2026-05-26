@@ -68,7 +68,7 @@ export default function HomeScreen() {
       {__DEV__ && (
         <TouchableOpacity
           style={[styles.button, styles.devButton]}
-          onPress={() => DeviceEventEmitter.emit('LiftoffShowReport')}
+          onPress={() => DeviceEventEmitter.emit('onShowReport')}
         >
           <Text style={styles.buttonText}>Show Boot Report</Text>
         </TouchableOpacity>
