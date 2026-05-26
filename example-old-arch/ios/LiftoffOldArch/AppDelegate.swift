@@ -12,6 +12,7 @@ class AppDelegate: RCTAppDelegate {
     self.dependencyProvider = RCTAppDependencyProvider()
     self.initialProps = [:]
 
+    LiftoffCollector.mark("rn:factory:willStart")
     let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
     LiftoffCollector.mark("app:didFinishLaunching:end")
     return result

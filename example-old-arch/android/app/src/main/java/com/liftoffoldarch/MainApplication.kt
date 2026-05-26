@@ -37,6 +37,7 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     LiftoffCollector.mark("app:onCreate:start")
     super.onCreate()
+    LiftoffCollector.mark("rn:factory:willStart")
     SoLoader.init(this, OpenSourceMergedSoMapping)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()

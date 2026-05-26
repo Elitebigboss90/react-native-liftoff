@@ -8,35 +8,44 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {mark, measure, getReport, DevMenuReport} from 'react-native-liftoff';
+import {useNavigation} from '@react-navigation/native';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {createPageScope, measure, getReport} from 'react-native-liftoff';
+import type {RootStackParamList} from '../App';
 
-mark('js:appComponent:render');
+const scope = createPageScope('Home');
 
-export default function App() {
+type NavProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
+const SCREENS = ['HeavyList', 'Animated', 'Storage', 'Form'] as const;
+
+export default function HomeScreen() {
+  const navigation = useNavigation<NavProp>();
+
   useEffect(() => {
-    mark('js:appComponent:mounted');
+    scope.mark('mounted');
+    scope.markTTI();
     const nativeStart =
       Platform.OS === 'ios'
         ? 'app:didFinishLaunching:start'
         : 'app:onCreate:start';
-    measure('boot:native-init', nativeStart, 'js:appComponent:render');
-    measure(
-      'boot:react-tree',
-      'js:appComponent:render',
-      'js:appComponent:mounted',
-    );
+    measure('boot:total', nativeStart, 'page:Home:tti');
+    measure('boot:js-to-tti', 'js:appComponent:mounted', 'page:Home:tti');
   }, []);
 
   const report = getReport();
+  const bootCheckpoints = report.checkpoints.filter(
+    c => !c.name.startsWith('page:'),
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Boot Checkpoints</Text>
+      <Text style={styles.heading}>Boot Timeline</Text>
       <View style={styles.table}>
-        {report.checkpoints.length === 0 ? (
-          <Text style={styles.empty}>No checkpoints yet.</Text>
+        {bootCheckpoints.length === 0 ? (
+          <Text style={styles.empty}>No native boot marks yet.</Text>
         ) : (
-          report.checkpoints.map((cp, i) => (
+          bootCheckpoints.map((cp, i) => (
             <View key={i} style={styles.row}>
               <Text style={styles.cpName}>{cp.name}</Text>
               <Text style={styles.cpTime}>{cp.timestamp.toFixed(2)} ms</Text>
@@ -45,29 +54,23 @@ export default function App() {
         )}
       </View>
 
-      <Text style={styles.heading}>Measurements</Text>
-      <View style={styles.table}>
-        {report.measurements.length === 0 ? (
-          <Text style={styles.empty}>No measurements yet.</Text>
-        ) : (
-          report.measurements.map((m, i) => (
-            <View key={i} style={styles.row}>
-              <Text style={styles.cpName}>{m.name}</Text>
-              <Text style={styles.cpTime}>{m.durationMs.toFixed(2)} ms</Text>
-            </View>
-          ))
-        )}
-      </View>
+      <Text style={styles.heading}>Screens</Text>
+      {SCREENS.map(screen => (
+        <TouchableOpacity
+          key={screen}
+          style={styles.button}
+          onPress={() => navigation.navigate(screen)}>
+          <Text style={styles.buttonText}>{screen}</Text>
+        </TouchableOpacity>
+      ))}
 
       {__DEV__ && (
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, styles.devButton]}
           onPress={() => DeviceEventEmitter.emit('onShowReport')}>
           <Text style={styles.buttonText}>Show Boot Report</Text>
         </TouchableOpacity>
       )}
-
-      <DevMenuReport />
     </ScrollView>
   );
 }
@@ -92,11 +95,12 @@ const styles = StyleSheet.create({
   cpName: {fontFamily: 'monospace', fontSize: 12, flex: 1, color: '#333'},
   cpTime: {fontFamily: 'monospace', fontSize: 12, color: '#007AFF'},
   button: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#007AFF',
     borderRadius: 8,
     padding: 12,
     alignItems: 'center',
-    marginTop: 16,
+    marginBottom: 10,
   },
+  devButton: {backgroundColor: '#34C759'},
   buttonText: {color: '#fff', fontWeight: '600', fontSize: 15},
 });
