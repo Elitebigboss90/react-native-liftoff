@@ -10,4 +10,4 @@ export interface Spec extends TurboModule {
 
 // New arch resolves via TurboModuleRegistry; old arch falls back to NativeModules bridge.
 export default (TurboModuleRegistry.get<Spec>('Liftoff') ??
-  NativeModules['Liftoff']) as Spec;
+  NativeModules.Liftoff) as Spec;
