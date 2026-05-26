@@ -98,9 +98,14 @@
     }
   },
   "workspaces": [
-    "example"
+    "example",
+    "example-old-arch"
   ],
-  "packageManager": "yarn@4.11.0",
+  "resolutions": {
+    "jest-environment-node": "^30.0.0",
+    "jest-mock": "^30.0.0"
+  },
+  "packageManager": "yarn@3.6.4",
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
@@ -143,8 +148,13 @@
         "react-native"
       ]
     },
+    "testPathIgnorePatterns": [
+      "<rootDir>/example/",
+      "<rootDir>/example-old-arch/"
+    ],
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
+      "<rootDir>/example-old-arch/node_modules",
       "<rootDir>/lib/"
     ]
   },

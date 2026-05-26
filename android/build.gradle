@@ -60,6 +60,16 @@ android {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
+
+  def isNewArchEnabled = project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+
+  sourceSets {
+    main {
+      java {
+        srcDirs += isNewArchEnabled ? ["src/newarch"] : ["src/oldarch"]
+      }
+    }
+  }
 }
 
 dependencies {
