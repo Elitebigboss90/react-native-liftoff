@@ -1,4 +1,4 @@
-import type { TurboModule, CodegenTypes } from 'react-native';
+import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry, NativeModules } from 'react-native';
 
 export interface Spec extends TurboModule {
@@ -6,7 +6,6 @@ export interface Spec extends TurboModule {
   getCheckpoints(): Array<{ name: string; timestamp: number }>;
   clear(): void;
   getAnchor(): { monotonicMs: number; wallMs: number };
-  readonly onShowReport: CodegenTypes.EventEmitter<void>;
 }
 
 // New arch resolves via TurboModuleRegistry; old arch falls back to NativeModules bridge.

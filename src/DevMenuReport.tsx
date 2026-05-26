@@ -10,7 +10,6 @@ import {
   View,
 } from 'react-native';
 import { clear, getReport } from './core';
-import NativeLiftoff from './NativeLiftoff';
 import type { Report } from './types';
 
 function formatLocalTime(wallMs: number): string {
@@ -44,19 +43,8 @@ function DevMenuReportImpl(): React.ReactElement {
 
     DevSettings.addMenuItem('Show Liftoff Report', show);
 
-    // Always listen on DeviceEventEmitter so in-app buttons can trigger the report.
-    const deSub = DeviceEventEmitter.addListener('onShowReport', show);
-
-    // On new arch, also subscribe via codegen EventEmitter so native code can trigger it.
-    const nativeSub =
-      typeof NativeLiftoff?.onShowReport === 'function'
-        ? NativeLiftoff.onShowReport(show)
-        : null;
-
-    return () => {
-      deSub.remove();
-      nativeSub?.remove();
-    };
+    const sub = DeviceEventEmitter.addListener('onShowReport', show);
+    return () => sub.remove();
   }, []);
 
   const handleClear = () => {

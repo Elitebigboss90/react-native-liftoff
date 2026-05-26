@@ -2,7 +2,7 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <LiftoffSpec/LiftoffSpec.h>
-@interface Liftoff : NativeLiftoffSpecBase <NativeLiftoffSpec>
+@interface Liftoff : NSObject <NativeLiftoffSpec>
 #else
 @interface Liftoff : NSObject <RCTBridgeModule>
 #endif
